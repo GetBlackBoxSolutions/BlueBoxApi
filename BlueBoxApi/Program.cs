@@ -21,20 +21,16 @@ builder.Services.AddDbContext<AppIdentityDbContext>(option =>
     option.UseSqlServer(builder.Configuration["IdentityConnection"]);
 });
 
+builder.Services.AddScoped<IdentityTokenClaimService>();
+
 builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>(options =>
-    {
-        options.Password.RequireNonAlphanumeric = false;
-    })
+    .AddIdentityCore<ApplicationUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppIdentityDbContext>();
 
 var key = Encoding.UTF8.GetBytes(builder.Configuration["SecretKey"]);
 builder.Services
-    .AddAuthentication(config =>
-    {
-        config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(config =>
     {
         config.RequireHttpsMetadata = false;
@@ -49,13 +45,12 @@ builder.Services
         };
     });
 
-builder.Services.AddScoped<IdentityTokenClaimService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("V1", new OpenApiInfo { Title = "Blue Box API", Version = "V1" });    
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Blue Box API", Version = "v1" });    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = @"JWT Authorization header using the Bearer scheme.                         
