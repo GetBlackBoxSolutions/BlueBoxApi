@@ -26,7 +26,8 @@ builder.Services.AddScoped<IdentityTokenClaimService>();
 builder.Services
     .AddIdentityCore<ApplicationUser>()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<AppIdentityDbContext>();
+    .AddEntityFrameworkStores<AppIdentityDbContext>()
+    .AddSignInManager<SignInManager<ApplicationUser>>();
 
 var key = Encoding.UTF8.GetBytes(builder.Configuration["SecretKey"]);
 builder.Services
