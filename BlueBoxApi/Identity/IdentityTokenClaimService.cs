@@ -25,7 +25,11 @@ namespace BlueBoxApi.Identity
             var key = Encoding.UTF8.GetBytes(_config["SecretKey"]);
             var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, userName) };
+
+            var claims = new List<Claim> { 
+                new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
             foreach (var role in roles)
             {
@@ -38,6 +42,7 @@ namespace BlueBoxApi.Identity
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
