@@ -10,10 +10,22 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(options =>
+builder.Services.AddControllers(configure =>
 {
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-    options.Filters.Add(new AuthorizeFilter(policy));
+    configure.Filters.Add(new AuthorizeFilter(policy));
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .WithHeaders("authorization", "accept", "content-type", "origin")
+            .AllowCredentials();
+        });
 });
 
 builder.Services.AddDbContext<AppIdentityDbContext>(option =>
@@ -33,7 +45,7 @@ var key = Encoding.UTF8.GetBytes(builder.Configuration["SecretKey"]);
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(config =>
-    {
+    {        
         config.RequireHttpsMetadata = false;
         config.SaveToken = true;
         config.TokenValidationParameters = new TokenValidationParameters
@@ -42,6 +54,7 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateIssuer = false,
             ValidateAudience = false,
+            ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
     });
@@ -96,7 +109,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
