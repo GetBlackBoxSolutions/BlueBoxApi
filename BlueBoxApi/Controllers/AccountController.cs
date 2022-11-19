@@ -61,8 +61,11 @@ namespace BlueBoxApi.Controllers
             {
                 return new AuthenticatedUserDto()
                 {
-                    DisplayName = user.DisplayName,
-                    UserName = user.UserName,
+                    UserProfile = new UserDto()
+                    {
+                        DisplayName = user.DisplayName,
+                        UserName = user.UserName,
+                    },
                     Token = await _tokenService.CreateTokenAsync(user.UserName)
                 };
             }
@@ -96,8 +99,11 @@ namespace BlueBoxApi.Controllers
             {
                 return new AuthenticatedUserDto()
                 {
-                    DisplayName = user.DisplayName,
-                    UserName = user.UserName,
+                    UserProfile = new UserDto()
+                    {
+                        DisplayName = user.DisplayName,
+                        UserName = user.UserName,
+                    },                    
                     Token = await _tokenService.CreateTokenAsync(user.UserName)
                 };
             }
