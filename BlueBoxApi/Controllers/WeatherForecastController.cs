@@ -7,9 +7,7 @@ namespace BlueBoxApi.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+        { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
 
         private readonly ILogger<WeatherForecastController> _logger;
 
@@ -18,7 +16,16 @@ namespace BlueBoxApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
+        /// <summary>
+        /// Get a forecast of the weather
+        /// </summary>
+        /// <returns>A WeatherForecast Object</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="401">If the user is not athorized</response>
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
