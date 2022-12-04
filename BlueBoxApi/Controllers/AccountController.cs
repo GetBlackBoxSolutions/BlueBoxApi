@@ -26,7 +26,16 @@ namespace BlueBoxApi.Controllers
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Get the current users information
+        /// </summary>
+        /// <returns>Returns a UserDto</returns>
+        /// <response code="200">Returns a Current User Object</response>
+        /// <response code="401">Returns if the user is not athorized</response>
         [Authorize]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("CurrentUser")]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
@@ -39,7 +48,18 @@ namespace BlueBoxApi.Controllers
             };
         }
 
+        /// <summary>
+        /// Get the current users access token
+        /// </summary>
+        /// <returns>Returns a UserDto</returns>
+        /// <response code="200">Returns the current users access token</response>
+        /// <response code="404">Returns if the current user is not found</response>
+        /// <response code="401">Returns if the user is not athorized</response>
         [Authorize]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("AccessToken")]
         public async Task<ActionResult<string>> GetAccessToken()
         {
@@ -48,6 +68,15 @@ namespace BlueBoxApi.Controllers
             return await _tokenService.CreateTokenAsync(user.UserName);
         }
 
+        /// <summary>
+        /// Post a login request
+        /// </summary>
+        /// <returns>Returns a AuthenticatedUserDto</returns>
+        /// <response code="200">Returns the current users profile and token</response>        
+        /// <response code="401">Returns if the user is not athorized</response>
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]     
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<ActionResult<AuthenticatedUserDto>> Login(LoginDto loginDto)
@@ -73,6 +102,15 @@ namespace BlueBoxApi.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Post a new user request
+        /// </summary>
+        /// <returns>Returns a AuthenticatedUserDto</returns>
+        /// <response code="200">Returns the current users profile and token</response>        
+        /// <response code="400">Returns if the user failed posting the correct information</response>
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [AllowAnonymous]
         [HttpPost("Register")]
         public async Task<ActionResult<AuthenticatedUserDto>> Register(RegisterDto registerDto)

@@ -20,10 +20,10 @@ namespace BlueBoxApi.Controllers
         /// Get a forecast of the weather
         /// </summary>
         /// <returns>A WeatherForecast Object</returns>
-        /// <response code="201">Returns the newly created item</response>
-        /// <response code="401">If the user is not athorized</response>
+        /// <response code="200">Returns a WeatherForcast Object</response>
+        /// <response code="401">Returns if the user is not athorized</response>
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
