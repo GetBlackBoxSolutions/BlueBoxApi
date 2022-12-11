@@ -43,8 +43,9 @@ namespace BlueBoxApi.Controllers
             if (user == null) return NotFound();
             return new UserDto()
             {
-                DisplayName = user.DisplayName,
-                UserName = user.UserName
+                DisplayName = $"{user.FirstName} {user.LastName}",
+                UserName = user.UserName,
+                Email = user.Email,
             };
         }
 
@@ -81,7 +82,9 @@ namespace BlueBoxApi.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<AuthenticatedUserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.FindByNameAsync(loginDto.UserNameOrEmail);
+            user ??= await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
+          
             if (user == null) return Unauthorized();
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
@@ -92,7 +95,7 @@ namespace BlueBoxApi.Controllers
                 {
                     UserProfile = new UserDto()
                     {
-                        DisplayName = user.DisplayName,
+                        DisplayName = user.FirstName,
                         UserName = user.UserName,
                     },
                     Token = await _tokenService.CreateTokenAsync(user.UserName)
@@ -127,7 +130,8 @@ namespace BlueBoxApi.Controllers
 
             var user = new ApplicationUser()
             {
-                DisplayName = registerDto.DisplayName,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
                 Email = registerDto.Email,
                 UserName = registerDto.UserName,
             };
@@ -139,7 +143,7 @@ namespace BlueBoxApi.Controllers
                 {
                     UserProfile = new UserDto()
                     {
-                        DisplayName = user.DisplayName,
+                        DisplayName = user.FirstName,
                         UserName = user.UserName,
                     },                    
                     Token = await _tokenService.CreateTokenAsync(user.UserName)

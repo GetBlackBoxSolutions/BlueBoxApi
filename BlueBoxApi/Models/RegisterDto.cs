@@ -4,7 +4,11 @@ namespace BlueBoxApi.Models
 {
     public class RegisterDto
     {
-        [Required] public string DisplayName { get; set; } = default!;
+        [Required]
+        public string FirstName { get; set; } = default!;
+
+        [Required]
+        public string LastName { get; set; } = default!;         
 
         [Required]
         [EmailAddress]
