@@ -19,17 +19,13 @@ namespace BlueBoxApi.Identity
             _userManager = userManager;
         }
 
-        public async Task<string> CreateTokenAsync(string userName)
+        public async Task<string> GetTokenAsync(string userName)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_config["SecretKey"]);
             var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
-
-            var claims = new List<Claim> { 
-                new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+            var claims = await _userManager.GetClaimsAsync(user);
 
             foreach (var role in roles)
             {

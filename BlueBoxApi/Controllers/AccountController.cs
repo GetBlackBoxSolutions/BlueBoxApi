@@ -1,5 +1,6 @@
 ﻿using BlueBoxApi.Identity;
 using BlueBoxApi.Models;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +67,7 @@ namespace BlueBoxApi.Controllers
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
             if (user == null) return NotFound();
-            return await _tokenService.CreateTokenAsync(user.UserName);
+            return await _tokenService.GetTokenAsync(user.UserName);
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace BlueBoxApi.Controllers
                         DisplayName = user.FirstName,
                         UserName = user.UserName,
                     },
-                    Token = await _tokenService.CreateTokenAsync(user.UserName)
+                    Token = await _tokenService.GetTokenAsync(user.UserName)
                 };
             }
 
@@ -139,14 +140,21 @@ namespace BlueBoxApi.Controllers
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (result.Succeeded)
             {
+                await _userManager.AddClaimsAsync(user, new Claim[]{
+                        new Claim(JwtClaimTypes.Name, $"{registerDto.FirstName} {registerDto.LastName}"),
+                        new Claim(JwtClaimTypes.GivenName, registerDto.FirstName),
+                        new Claim(JwtClaimTypes.FamilyName, registerDto.LastName),
+                        new Claim(JwtClaimTypes.Email, registerDto.Email) });
+
                 return new AuthenticatedUserDto()
                 {
                     UserProfile = new UserDto()
                     {
                         DisplayName = user.FirstName,
                         UserName = user.UserName,
+                        Email = user.Email
                     },                    
-                    Token = await _tokenService.CreateTokenAsync(user.UserName)
+                    Token = await _tokenService.GetTokenAsync(user.UserName)
                 };
             }
 
