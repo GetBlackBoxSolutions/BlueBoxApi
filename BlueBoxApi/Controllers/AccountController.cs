@@ -98,6 +98,7 @@ namespace BlueBoxApi.Controllers
                     {
                         DisplayName = user.FirstName,
                         UserName = user.UserName,
+                        Email = user.Email,
                     },
                     Token = await _tokenService.GetTokenAsync(user.UserName)
                 };
